@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Animated User Form</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f0f4ff, #dce0ff);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .form-wrapper {
+      background-color: white;
+      padding: 30px 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 450px;
+      opacity: 0;
+      transform: translateY(40px);
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #555;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+      transition: 0.3s ease;
+      font-size: 1rem;
+    }
+
+    input:focus {
+      border-color: #4b6cb7;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(75, 108, 183, 0.2);
+    }
+
+    button {
+      background: #4b6cb7;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1.1rem;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #3a55a4;
+    }
+
+    .success {
+      text-align: center;
+      color: green;
+      font-weight: bold;
+      margin-top: 15px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="form-wrapper" id="formBox">
+  <h2>Enter Your Information</h2>
+  <form id="userForm">
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required />
+    </div>
+
+    <div class="form-group">
+      <label for="age">Age:</label>
+      <input type="number" id="age" name="age" min="0" required />
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required />
+    </div>
+
+    <div class="form-group">
+      <label for="mobile">Mobile:</label>
+      <input type="tel" id="mobile" name="mobile" pattern="[0-9]{10}" placeholder="10-digit number" required />
+    </div>
+
+    <button type="submit">Submit</button>
+    <p class="success" id="successMsg">🎉 Submitted Successfully!</p>
+  </form>
+</div>
+
+<script>
+  // Animate form on load
+  gsap.to(".form-wrapper", {
+    y: 0,
+    opacity: 1,
+    duration: 1.2,
+    ease: "power3.out"
+  });
+
+  const form = document.getElementById("userForm");
+  const successMsg = document.getElementById("successMsg");
+
+  form.addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const data = {
+      name: this.name.value.trim(),
+      age: parseInt(this.age.value, 10),
+      email: this.email.value.trim(),
+      mobile: this.mobile.value.trim()
+    };
+
+    // Replace with actual API endpoint
+    try {
+      const res = await fetch("/api/submit", {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        form.reset();
+        gsap.fromTo(successMsg, {opacity: 0}, {opacity: 1, duration: 0.8, display: "block"});
+      } else {
+        alert("❌ Something went wrong.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("❌ Network error occurred.");
+    }
+  });
+</script>
+
+</body>
+</html>

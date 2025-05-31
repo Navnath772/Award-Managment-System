@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin Dashboard - Award Management</title>
+
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+<style>
+  /* Reset & base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f2f5;
+    margin: 0; padding: 0;
+    color: #222;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+  h1, h2, h3 {
+    margin: 0;
+  }
+
+  /* Container */
+  .container {
+    max-width: 1100px;
+    margin: 2rem auto 3rem;
+    padding: 0 15px;
+  }
+
+  /* Header */
+  header {
+    background: #4361ee;
+    color: white;
+    padding: 20px 30px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 5px 15px rgb(67 97 238 / 0.4);
+  }
+  header h1 {
+    font-weight: 700;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  header h1 i {
+    color: #ffd166;
+  }
+  .user-info {
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .logout-btn {
+    background: #ef476f;
+    color: white;
+    padding: 7px 14px;
+    border-radius: 25px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
+  }
+  .logout-btn:hover,
+  .logout-btn:focus {
+    background: #d63c5e;
+    outline: none;
+  }
+
+  /* Dashboard Actions */
+  .dashboard-actions {
+    margin: 25px 0 40px;
+    text-align: right;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    border: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.05);
+    background: #4361ee;
+    color: white;
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  .btn:hover:not(:disabled),
+  .btn:focus:not(:disabled) {
+    background: #3655c9;
+    box-shadow: 0 8px 20px rgb(67 97 238 / 0.4);
+    outline: none;
+  }
+  .btn-sm {
+    font-size: 0.85rem;
+    padding: 6px 12px;
+    border-radius: 6px;
+  }
+  .btn-edit {
+    background: #ffd166;
+    color: #444;
+  }
+  .btn-edit:hover,
+  .btn-edit:focus {
+    background: #e6c15f;
+    box-shadow: 0 5px 15px rgb(255 209 102 / 0.5);
+    outline: none;
+  }
+  .btn-delete {
+    background: #ef476f;
+    color: white;
+  }
+  .btn-delete:hover,
+  .btn-delete:focus {
+    background: #d63c5e;
+    box-shadow: 0 5px 15px rgb(239 71 111 / 0.6);
+    outline: none;
+  }
+
+  /* Award Blocks Container */
+  .award-blocks-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 50px;
+    justify-content: flex-start;
+  }
+  .award-block {
+    background: white;
+    width: 180px;
+    height: 180px;
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    text-align: center;
+    padding: 20px;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    user-select: none;
+    position: relative;
+  }
+  .award-block h3 {
+    font-size: 3rem;
+    color: #4361ee;
+    margin-bottom: 15px;
+    user-select: none;
+  }
+  .award-block p {
+    font-weight: 700;
+    font-size: 1.15rem;
+    margin-bottom: 8px;
+    color: #222;
+    word-break: break-word;
+    user-select: none;
+  }
+  .award-block span {
+    font-size: 0.95rem;
+    color: #666;
+    user-select: none;
+  }
+  .award-block:hover,
+  .award-block:focus {
+    box-shadow: 0 12px 25px rgba(67, 97, 238, 0.5);
+    transform: translateY(-7px);
+    outline: none;
+  }
+
+  /* Award Section */
+  .award-section {
+    background: white;
+    border-radius: 15px;
+    padding: 25px 30px;
+    margin-bottom: 40px;
+    box-shadow: 0 4px 25px rgb(0 0 0 / 0.07);
+    border-left: 8px solid #4361ee;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  /* Award Header */
+  .award-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    gap: 10px;
+  }
+  .award-title {
+    font-size: 1.5rem;
+    color: #4361ee;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    user-select: none;
+  }
+  .award-title i {
+    color: #ffd166;
+  }
+  .award-meta {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .submission-count {
+    background: #4361ee;
+    color: white;
+    padding: 6px 16px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+  }
+  .submission-count i {
+    font-size: 1.1rem;
+  }
+  .award-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  /* QR Section */
+  .qr-section {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px 30px;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: inset 0 0 15px rgb(0 0 0 / 0.03);
+    user-select: none;
+  }
+  .qr-section h3 {
+    font-weight: 600;
+    color: #4361ee;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+  .qr-section h3 i {
+    font-size: 1.4rem;
+  }
+  .qr-code-container {
+    display: inline-block;
+    padding: 15px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgb(0 0 0 / 0.08);
+  }
+  .qr-section img {
+    width: 160px;
+    height: 160px;
+  }
+  .submission-url {
+    margin-top: 14px;
+    font-size: 0.95rem;
+    color: #555;
+    word-break: break-word;
+    user-select: text;
+  }
+
+  /* Submissions Table */
+  .submissions-container h3 {
+    margin-bottom: 15px;
+    font-weight: 700;
+    color: #333;
+  }
+  .submissions-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .submissions-table th, .submissions-table td {
+    padding: 12px 14px;
+    border: 1px solid #ddd;
+  }
+  .submissions-table th {
+    background: #4361ee;
+    color: white;
+    text-align: left;
+  }
+  .submissions-table tr:nth-child(even) {
+    background: #f5f7fb;
+  }
+  .submissions-table tr:hover {
+    background: #dbe4ff;
+  }
+  .submissions-table td {
+    color: #222;
+  }
+  .no-submissions {
+    color: #666;
+    font-style: italic;
+    margin: 10px 0 20px;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .award-blocks-container {
+      justify-content: center;
+    }
+    .award-block {
+      width: 140px;
+      height: 140px;
+      padding: 16px;
+    }
+    .award-block h3 {
+      font-size: 2.5rem;
+    }
+  }
+  @media (max-width: 600px) {
+    header {
+      flex-direction: column;
+      gap: 15px;
+      padding: 20px;
+      text-align: center;
+    }
+    .dashboard-actions {
+      text-align: center;
+    }
+    .award-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+    }
+    .award-actions {
+      justify-content: flex-start;
+      width: 100%;
+    }
+    .award-section {
+      padding: 20px;
+    }
+    .submissions-table th, .submissions-table td {
+      padding: 10px 8px;
+    }
+  }
+
+</style>
+</head>
+<body>
+
+<header>
+  <h1><i class="fa-solid fa-trophy"></i> Award Dashboard</h1>
+  <div class="user-info" aria-label="User info and logout">
+    <span>Admin: <strong id="adminName">AdminUser</strong></span>
+    <button class="logout-btn" id="logoutBtn" aria-label="Logout">
+      <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </button>
+  </div>
+</header>
+
+<main class="container" role="main" aria-live="polite" aria-relevant="additions removals">
+
+  <section class="dashboard-actions" aria-label="Dashboard controls">
+    <button class="btn" id="addAwardBtn" aria-haspopup="dialog" aria-controls="awardFormDialog">
+      <i class="fa-solid fa-plus"></i> Add Award
+    </button>
+  </section>
+
+  <!-- Awards summary blocks -->
+  <section class="award-blocks-container" id="awardBlocksContainer" aria-label="Award summary blocks">
+    <!-- Award blocks will be dynamically inserted here -->
+  </section>
+
+  <!-- Award detail sections container -->
+  <section id="awardDetailsContainer" aria-label="Award details sections">
+    <!-- Dynamic award sections inserted here -->
+  </section>
+
+</main>
+
+<!-- Award Form Dialog -->
+<div id="awardFormDialog" role="dialog" aria-modal="true" aria-labelledby="formTitle" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+  <form id="awardForm" style="background:#fff; padding:25px 30px; border-radius:12px; max-width:400px; width:90%; box-shadow: 0 8px 35px rgba(0,0,0,0.3);">
+    <h2 id="formTitle" style="margin-bottom:20px; color:#4361ee; text-align:center;">Add New Award</h2>
+    <label for="awardNameInput" style="display:block; margin-bottom:8px; font-weight:600;">Award Name:</label>
+    <input id="awardNameInput" name="awardName" type="text" required aria-required="true" autocomplete="off" style="width:100%; padding:10px 14px; font-size:1rem; border:1px solid #ccc; border-radius:8px; margin-bottom:20px;"/>
+    <div style="text-align:center;">
+      <button type="submit" class="btn" style="min-width:100px;" aria-label="Submit award form">Save</button>
+      <button type="button" class="btn btn-delete" id="cancelFormBtn" style="min-width:100px; margin-left:10px;" aria-label="Cancel award form">Cancel</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Initial data - could come from DB/API
+  let awards = [
+    { id: 1, name: 'Best Innovator', submissions: [] },
+    { id: 2, name: 'Top Performer', submissions: [] },
+    { id: 3, name: 'Community Star', submissions: [] }
+  ];
+  let awardIdCounter = awards.length;
+
+  // Cached DOM
+  const awardBlocksContainer = document.getElementById('awardBlocksContainer');
+  const awardDetailsContainer = document.getElementById('awardDetailsContainer');
+  const addAwardBtn = document.getElementById('addAwardBtn');
+  const awardFormDialog = document.getElementById('awardFormDialog');
+  const awardForm = document.getElementById('awardForm');
+  const awardNameInput = document.getElementById('awardNameInput');
+  const cancelFormBtn = document.getElementById('cancelFormBtn');
+
+  // Utility: generate a fake QR code URL (could be replaced by real QR generator)
+  function generateQRCodeURL(awardId) {
+    return `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://example.com/submit?awardId=${awardId}`;
+  }
+
+  // Render all award blocks
+  function renderAwardBlocks() {
+    awardBlocksContainer.innerHTML = '';
+    awards.forEach(award => {
+      const block = document.createElement('div');
+      block.className = 'award-block';
+      block.setAttribute('tabindex', '0');
+      block.setAttribute('role', 'button');
+      block.setAttribute('aria-label', `View details for ${award.name}`);
+      block.dataset.awardId = award.id;
+      block.innerHTML = `
+        <h3>${award.name.charAt(0).toUpperCase()}</h3>
+        <p title="${award.name}">${award.name.length > 15 ? award.name.slice(0, 15) + '…' : award.name}</p>
+        <span>${award.submissions.length} submission${award.submissions.length !== 1 ? 's' : ''}</span>
+      `;
+      block.addEventListener('click', () => openAwardSection(award.id));
+      block.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openAwardSection(award.id);
+        }
+      });
+      awardBlocksContainer.appendChild(block);
+    });
+    // Animate blocks in
+    gsap.fromTo('.award-block', { y: 20, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.12, duration: 0.7, ease: 'power2.out' });
+  }
+
+  // Open award detail section by award id
+  function openAwardSection(id) {
+    const existingSection = document.getElementById(`awardSection-${id}`);
+    if (existingSection) {
+      // Scroll smoothly to existing section
+      existingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Animate highlight
+      gsap.fromTo(existingSection, { backgroundColor: '#fff7e6' }, { backgroundColor: '#fff', duration: 1.5 });
+      return;
+    }
+
+    const award = awards.find(a => a.id === id);
+    if (!award) return;
+
+    // Create section container
+    const section = document.createElement('section');
+    section.className = 'award-section';
+    section.id = `awardSection-${award.id}`;
+    section.setAttribute('tabindex', '-1');
+    section.setAttribute('aria-label', `Details for award ${award.name}`);
+
+    // QR code url and submissions url
+    const qrURL = generateQRCodeURL(award.id);
+    const submissionURL = `https://example.com/submit?awardId=${award.id}`;
+
+    section.innerHTML = `
+      <div class="award-header">
+        <h2 class="award-title"><i class="fa-solid fa-award"></i> ${award.name}</h2>
+        <div class="award-meta">
+          <span class="submission-count" aria-live="polite" aria-atomic="true" aria-relevant="text">
+            <i class="fa-solid fa-users"></i> ${award.submissions.length} submission${award.submissions.length !== 1 ? 's' : ''}
+          </span>
+          <div class="award-actions">
+            <button class="btn btn-edit btn-sm" aria-label="Edit award ${award.name}" data-id="${award.id}"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+            <button class="btn btn-delete btn-sm" aria-label="Delete award ${award.name}" data-id="${award.id}"><i class="fa-solid fa-trash"></i> Delete</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="qr-section" aria-label="QR code and submission link">
+        <h3><i class="fa-solid fa-qrcode"></i> QR Code to Submit</h3>
+        <div class="qr-code-container">
+          <img src="${qrURL}" alt="QR code for submitting to award ${award.name}" />
+        </div>
+        <div class="submission-url" title="Direct submission URL">${submissionURL}</div>
+      </div>
+
+      <div class="submissions-container" aria-label="Submissions for award ${award.name}">
+        <h3>Submissions</h3>
+        ${award.submissions.length === 0 ? '<p class="no-submissions">No submissions yet.</p>' : generateSubmissionsTable(award.submissions)}
+      </div>
+    `;
+
+    awardDetailsContainer.appendChild(section);
+    // Animate in
+    gsap.to(section, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' });
+    section.focus();
+
+    // Attach listeners for edit/delete buttons
+    section.querySelector('.btn-edit').addEventListener('click', () => openEditAwardForm(award.id));
+    section.querySelector('.btn-delete').addEventListener('click', () => deleteAward(award.id));
+  }
+
+  // Generate submissions table HTML from submissions array
+  function generateSubmissionsTable(submissions) {
+    if (submissions.length === 0) return '';
+
+    // For demo, assume all submissions have same keys: id, name, place, date, etc.
+    const keys = Object.keys(submissions[0]);
+
+    let table = '<table class="submissions-table"><thead><tr>';
+    keys.forEach(key => {
+      table += `<th>${capitalize(key)}</th>`;
+    });
+    table += '</tr></thead><tbody>';
+    submissions.forEach(sub => {
+      table += '<tr>';
+      keys.forEach(key => {
+        table += `<td>${sub[key]}</td>`;
+      });
+      table += '</tr>';
+    });
+    table += '</tbody></table>';
+    return table;
+  }
+
+  // Capitalize first letter
+  function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  // Open Add Award form dialog
+  function openAddAwardForm() {
+    awardFormDialog.style.display = 'flex';
+    awardForm.reset();
+    awardNameInput.focus();
+    document.getElementById('formTitle').textContent = 'Add New Award';
+    awardForm.dataset.editing = 'false';
+  }
+
+  // Open Edit Award form dialog
+  function openEditAwardForm(awardId) {
+    const award = awards.find(a => a.id === awardId);
+    if (!award) return;
+    awardFormDialog.style.display = 'flex';
+    awardNameInput.value = award.name;
+    awardNameInput.focus();
+    document.getElementById('formTitle').textContent = 'Edit Award';
+    awardForm.dataset.editing = awardId;
+  }
+
+  // Close form dialog
+  function closeAwardForm() {
+    awardFormDialog.style.display = 'none';
+    awardForm.dataset.editing = '';
+  }
+
+  // Delete award with confirmation
+  function deleteAward(awardId) {
+    const award = awards.find(a => a.id === awardId);
+    if (!award) return;
+    if (confirm(`Are you sure you want to delete the award "${award.name}"? This action cannot be undone.`)) {
+      // Remove award from array
+      awards = awards.filter(a => a.id !== awardId);
+      // Remove detail section if open
+      const detailSection = document.getElementById(`awardSection-${awardId}`);
+      if (detailSection) detailSection.remove();
+      // Re-render award blocks
+      renderAwardBlocks();
+      alert(`Award "${award.name}" deleted.`);
+    }
+  }
+
+  // Form submit handler (add or edit)
+  awardForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = awardNameInput.value.trim();
+    if (!name) {
+      alert('Please enter a valid award name.');
+      awardNameInput.focus();
+      return;
+    }
+
+    const editingId = awardForm.dataset.editing;
+    if (editingId && editingId !== 'false') {
+      // Edit existing award
+      const award = awards.find(a => a.id === +editingId);
+      if (award) {
+        award.name = name;
+        // Update detail section title and submission count
+        const section = document.getElementById(`awardSection-${award.id}`);
+        if (section) {
+          section.querySelector('.award-title').innerHTML = `<i class="fa-solid fa-award"></i> ${award.name}`;
+          section.querySelector('.award-meta .submission-count').innerHTML = `<i class="fa-solid fa-users"></i> ${award.submissions.length} submission${award.submissions.length !== 1 ? 's' : ''}`;
+          // Update QR code alt and URL text
+          const qrImg = section.querySelector('.qr-code-container img');
+          qrImg.alt = `QR code for submitting to award ${award.name}`;
+          const submissionURLDiv = section.querySelector('.submission-url');
+          submissionURLDiv.textContent = `https://example.com/submit?awardId=${award.id}`;
+        }
+      }
+    } else {
+      // Add new award
+      awardIdCounter++;
+      awards.push({ id: awardIdCounter, name, submissions: [] });
+    }
+
+    renderAwardBlocks();
+    closeAwardForm();
+  });
+
+  // Cancel button in form
+  cancelFormBtn.addEventListener('click', () => {
+    closeAwardForm();
+  });
+
+  // Clicking outside the form closes dialog
+  awardFormDialog.addEventListener('click', (e) => {
+    if (e.target === awardFormDialog) {
+      closeAwardForm();
+    }
+  });
+
+  // Escape key closes form dialog
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && awardFormDialog.style.display === 'flex') {
+      closeAwardForm();
+    }
+  });
+
+  // Add Award button click
+  addAwardBtn.addEventListener('click', openAddAwardForm);
+
+  // Initial render
+  renderAwardBlocks();
+
+</script>
+
+</body>
+</html>

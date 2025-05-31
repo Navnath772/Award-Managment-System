@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <h1>Award Winner Data Store - Admin Dashboard</h1>
+
+    <!-- Form to Create a New Award Type -->
+    <form method="POST" action="/create_award_type">
+        <input type="text" name="award_name" placeholder="Award Name" required>
+        <input type="number" name="num_fields" placeholder="Number of Fields" required>
+        <button type="submit">Create Award Type</button>
+    </form>
+
+    <hr>
+
+    <!-- Loop through each award -->
+    {% for award in awards %}
+        <div style="border:1px solid black; padding:10px; margin-bottom:20px;">
+            <h2>{{ award['award_name'] }}</h2>
+
+            <!-- QR Code -->
+            <p><strong>Form Link:</strong> <a href="/form/{{ award['id'] }}" target="_blank">/form/{{ award['id'] }}</a></p>
+            <img src="data:image/png;base64,{{ award['qr_code'] }}" alt="QR Code for Form" width="150" />
+
+            <!-- Display Submitted Data -->
+            <h3>Submitted Entries</h3>
+            {% if award['data'] %}
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            {% for field in award['fields'] %}
+                                <th>{{ field }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in award['data'] %}
+                            <tr>
+                                <td>{{ row['id'] }}</td>
+                                {% for field in award['fields'] %}
+                                    <td>{{ row[field] }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No submissions yet.</p>
+            {% endif %}
+        </div>
+    {% endfor %}
+</body>
+</html>

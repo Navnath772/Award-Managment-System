@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Award Type</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    /* Reset and base */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #00c9ff 0%, #92fe9d 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      color: #2d2d2d;
+      overflow-y: auto;
+    }
+
+    /* Container */
+    .container {
+      max-width: 700px;
+      width: 100%;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(0, 0, 0, 0.05);
+      padding: 2.5rem 3rem;
+      animation: fadeInUp 0.8s cubic-bezier(.5,0,.1,1);
+      position: relative;
+    }
+
+    h1 {
+      font-weight: 700;
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 1.8rem;
+      color: #0b3d91;
+      letter-spacing: 1px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+    }
+
+    h1 i {
+      color: #00c9ff;
+      margin-right: 10px;
+      text-shadow: none;
+    }
+
+    h2 {
+      font-weight: 600;
+      font-size: 1.4rem;
+      color: #444;
+      margin-top: 2.5rem;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #00c9ff;
+      padding-bottom: 0.3rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* Form group with floating labels */
+    .form-group {
+      position: relative;
+      margin-bottom: 1.7rem;
+    }
+
+    label {
+      position: absolute;
+      top: 50%;
+      left: 15px;
+      color: #666;
+      font-weight: 600;
+      font-size: 1rem;
+      pointer-events: none;
+      transform: translateY(-50%);
+      transition: all 0.25s ease;
+      background: #fff;
+      padding: 0 5px;
+      border-radius: 4px;
+      user-select: none;
+    }
+
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 1.2rem 1rem 0.5rem 1rem;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 500;
+      outline-offset: 4px;
+      transition: border-color 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      resize: vertical;
+      min-height: 38px;
+    }
+    textarea {
+      min-height: 80px;
+      padding-top: 1.5rem;
+    }
+
+    /* Move label up on focus or filled */
+    input[type="text"]:focus + label,
+    select:focus + label,
+    textarea:focus + label,
+    input[type="text"]:not(:placeholder-shown) + label,
+    textarea:not(:placeholder-shown) + label {
+      top: -10px;
+      left: 12px;
+      font-size: 0.85rem;
+      color: #00c9ff;
+      font-weight: 700;
+      box-shadow: 0 2px 6px rgba(0,201,255,0.25);
+    }
+
+    input[type="text"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #00c9ff;
+      box-shadow: 0 0 10px #00c9ff66;
+    }
+
+    /* Form fields container */
+    .form-field {
+      background: #f0f7ff;
+      border: 2px solid #00bfff88;
+      padding: 1.3rem 1.5rem 1.5rem 1.5rem;
+      border-radius: 16px;
+      margin-bottom: 1.5rem;
+      position: relative;
+      box-shadow: 0 0 10px #00bfff33 inset;
+      transition: box-shadow 0.4s ease;
+    }
+    .form-field:hover {
+      box-shadow: 0 0 15px #00c9ff88 inset;
+    }
+
+    /* Remove button */
+    .btn-remove {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: #ff4e42;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: background 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 6px rgba(255, 78, 66, 0.7);
+    }
+    .btn-remove:hover {
+      background: #e53b30;
+      box-shadow: 0 4px 10px rgba(229, 59, 48, 0.9);
+    }
+
+    /* Buttons */
+    .btn,
+    .btn-secondary,
+    .btn-primary,
+    .btn-outline-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0.65rem 1.6rem;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      border: none;
+      font-weight: 700;
+      text-decoration: none;
+      user-select: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #007bff, #004aad);
+      color: white;
+      box-shadow: 0 5px 15px rgba(0, 123, 255, 0.6);
+      letter-spacing: 0.05em;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #004aad, #007bff);
+      box-shadow: 0 8px 24px rgba(0, 74, 173, 0.9);
+      transform: scale(1.05);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #17a2b8, #0f6674);
+      color: white;
+      box-shadow: 0 4px 14px rgba(23, 162, 184, 0.7);
+    }
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #0f6674, #17a2b8);
+      box-shadow: 0 7px 20px rgba(15, 102, 116, 0.9);
+      transform: scale(1.04);
+    }
+
+    .btn-outline-secondary {
+      background: transparent;
+      color: #6c757d;
+      border: 2px solid #6c757d;
+      box-shadow: none;
+      font-weight: 600;
+    }
+    .btn-outline-secondary:hover {
+      background: #6c757d;
+      color: white;
+      box-shadow: 0 5px 10px rgba(108, 117, 125, 0.8);
+      transform: scale(1.05);
+    }
+
+    /* Button icons */
+    .btn i {
+      font-size: 1.2rem;
+    }
+
+    /* Form actions */
+    .form-actions {
+      text-align: center;
+      margin-top: 3rem;
+    }
+
+    /* QR code container */
+    .qr-code-container {
+      text-align: center;
+      margin-top: 3rem;
+      padding: 1.8rem 1.5rem;
+      background: linear-gradient(135deg, #e0f7ff, #c0f0ff);
+      border-radius: 16px;
+      box-shadow: 0 0 18px #00c9ff88;
+      user-select: none;
+      display: none;
+      transform-origin: center;
+    }
+
+    .qr-code-container h3 {
+      color: #0077cc;
+      font-weight: 700;
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+      text-shadow: 0 1px 2px #0099ff88;
+    }
+
+    #qrCodeImage {
+      margin: 0 auto;
+      max-width: 210px;
+      width: 100%;
+      height: 210px;
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+    }
+
+    .qr-code-container p {
+      margin-top: 1rem;
+      font-size: 1rem;
+      color: #005f99;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Scrollbar styling for long forms */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 20px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #00c9ff;
+      border-radius: 20px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #007bff;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 2rem 1.5rem;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+      h2 {
+        font-size: 1.15rem;
+      }
+      .btn, .btn-primary, .btn-secondary {
+        font-size: 1rem;
+        padding: 0.55rem 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container" role="main" aria-label="Create new award type form">
+    <h1><i class="fas fa-plus-circle"></i> Create New Award Type</h1>
+    <form method="POST" id="awardTypeForm" novalidate>
+      <div class="form-group">
+        <input type="text" id="name" name="name" placeholder=" " required aria-required="true" aria-describedby="nameHelp" />
+        <label for="name">Award Name</label>
+      </div>
+
+      <h2><i class="fas fa-list-alt"></i> Form Fields</h2>
+      <div id="form-fields" aria-live="polite" aria-relevant="all" aria-atomic="true">
+        <div class="form-field" role="group" aria-label="Form field 1">
+          <div class="form-group">
+            <input type="text" name="field_name[]" placeholder=" " required aria-required="true" />
+            <label>Field Name</label>
+          </div>
+          <div class="form-group">
+            <select name="field_type[]" required aria-required="true" aria-label="Field Type">
+              <option value="" disabled selected hidden>Choose type</option>
+              <option value="text">Text</option>
+              <option value="number">Number</option>
+              <option value="date">Date</option>
+              <option value="email">Email</option>
+              <option value="textarea">Textarea</option>
+            </select>
+          </div>
+          <button type="button" class="btn-remove" aria-label="Remove this form field">
+            <i class="fas fa-trash-alt"></i> Remove
+          </button>
+        </div>
+      </div>
+
+      <div style="text-align: center;">
+        <button type="button" class="btn btn-secondary" id="addFieldBtn" aria-label="Add new form field">
+          <i class="fas fa-plus"></i> Add Field
+        </button>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" aria-label="Create Award Type">
+          <i class="fas fa-check-circle"></i> Create Award Type
+        </button>
+      </div>
+    </form>
+
+    <div class="qr-code-container" id="qrCodeSection" aria-live="polite" aria-atomic="true" aria-label="QR code for created award type">
+      <h3><i class="fas fa-qrcode"></i> QR Code for New Award Type</h3>
+      <img id="qrCodeImage" src="" alt="QR code to access award type form" />
+      <p>Scan this QR code to open the submission form for this award type.</p>
+    </div>
+  </div>
+
+  <script>
+    const addFieldBtn = document.getElementById('addFieldBtn');
+    const formFieldsContainer = document.getElementById('form-fields');
+
+    function createFormField() {
+      const formField = document.createElement('div');
+      formField.className = 'form-field';
+      formField.setAttribute('role', 'group');
+      formField.setAttribute('aria-label', 'New form field');
+
+      formField.innerHTML = `
+        <div class="form-group">
+          <input type="text" name="field_name[]" placeholder=" " required aria-required="true" />
+          <label>Field Name</label>
+        </div>
+        <div class="form-group">
+          <select name="field_type[]" required aria-required="true" aria-label="Field Type">
+            <option value="" disabled selected hidden>Choose type</option>
+            <option value="text">Text</option>
+            <option value="number">Number</option>
+            <option value="date">Date</option>
+            <option value="email">Email</option>
+            <option value="textarea">Textarea</option>
+          </select>
+        </div>
+        <button type="button" class="btn-remove" aria-label="Remove this form field">
+          <i class="fas fa-trash-alt"></i> Remove
+        </button>
+      `;
+
+      formFieldsContainer.appendChild(formField);
+
+      // Animate new field appearance
+      gsap.from(formField, {duration: 0.6, y: 30, opacity: 0, ease: "power3.out"});
+
+      // Attach remove event
+      formField.querySelector('.btn-remove').addEventListener('click', () => {
+        removeFormField(formField);
+      });
+    }
+
+    function removeFormField(fieldElement) {
+      // Animate removal and then remove element from DOM
+      gsap.to(fieldElement, {
+        duration: 0.4,
+        y: 30,
+        opacity: 0,
+        ease: "power3.in",
+        onComplete: () => fieldElement.remove()
+      });
+    }
+
+    // Add initial remove listener
+    document.querySelectorAll('.btn-remove').forEach(btn => {
+      btn.addEventListener('click', e => {
+        removeFormField(e.currentTarget.closest('.form-field'));
+      });
+    });
+
+    addFieldBtn.addEventListener('click', () => {
+      createFormField();
+    });
+
+    // Form submission
+    document.getElementById('awardTypeForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Simple validation
+      const nameInput = this.name;
+      if (!nameInput.value.trim()) {
+        alert('Please enter the award name.');
+        nameInput.focus();
+        return;
+      }
+
+      const fieldNames = [...this.querySelectorAll('input[name="field_name[]"]')];
+      for (const input of fieldNames) {
+        if (!input.value.trim()) {
+          alert('Please enter all form field names.');
+          input.focus();
+          return;
+        }
+      }
+
+      const fieldTypes = [...this.querySelectorAll('select[name="field_type[]"]')];
+      for (const select of fieldTypes) {
+        if (!select.value) {
+          alert('Please select all form field types.');
+          select.focus();
+          return;
+        }
+      }
+
+      // Here you would typically send the form data to the server via fetch or form submit.
+      // For demo, we'll simulate QR code generation and show QR code container.
+
+      // Generate dummy QR code URL (could be a real API or your backend generates it)
+      const awardNameSafe = encodeURIComponent(nameInput.value.trim().toLowerCase().replace(/\s+/g, '-'));
+      const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=210x210&data=https://yourapp.com/award/${awardNameSafe}`;
+
+      const qrCodeImage = document.getElementById('qrCodeImage');
+      qrCodeImage.src = qrCodeUrl;
+
+      const qrCodeSection = document.getElementById('qrCodeSection');
+      qrCodeSection.style.display = 'block';
+
+      // Animate QR code appearance
+      gsap.fromTo(qrCodeSection, {scale: 0.8, opacity: 0}, {duration: 0.6, scale: 1, opacity: 1, ease: "back.out(1.7)"});
+
+      // Optional: Scroll into view
+      qrCodeSection.scrollIntoView({behavior: 'smooth'});
+    });
+  </script>
+</body>
+</html>
